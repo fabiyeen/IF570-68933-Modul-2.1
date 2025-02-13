@@ -20,6 +20,8 @@ import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -34,47 +36,68 @@ import com.example.reply.data.LocalEmailsDataProvider
 import com.example.reply.ui.theme.AppTheme
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity() : ComponentActivity(), Parcelable {
 
     private val viewModel: ReplyHomeViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    constructor(parcel: Parcel) : this() {}
 
-        setContent {
-            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-            AppTheme {
-                Surface(tonalElevation = 5.dp) {
-                ReplyApp(
-                    replyHomeUIState = uiState,
-                    closeDetailScreen = {
-                        viewModel.closeDetailScreen()
-                    },
-                    navigateToDetail = { emailId ->
-                        viewModel.setSelectedEmail(emailId)
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+
+            setContent {
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+                AppTheme {
+                    Surface(tonalElevation = 5.dp) {
+                        ReplyApp(
+                            replyHomeUIState = uiState,
+                            closeDetailScreen = {
+                                viewModel.closeDetailScreen()
+                            },
+                            navigateToDetail = { emailId ->
+                                viewModel.setSelectedEmail(emailId)
+                            }
+                        )
                     }
-                )
+                }
             }
         }
-    }
-}
 
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "DefaultPreviewDark"
-)
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "DefaultPreviewLight"
-)
-@Composable
-fun ReplyAppPreview() {
-    AppTheme {
-        ReplyApp(
-            replyHomeUIState = ReplyHomeUIState(
-                emails = LocalEmailsDataProvider.allEmails
-            )
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<MainActivity> {
+            override fun createFromParcel(parcel: Parcel): MainActivity {
+                return MainActivity(parcel)
+            }
+
+            override fun newArray(size: Int): Array<MainActivity?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        @Preview(
+            uiMode = Configuration.UI_MODE_NIGHT_YES,
+            name = "DefaultPreviewDark"
         )
-    }
-}
+        @Preview(
+            uiMode = Configuration.UI_MODE_NIGHT_NO,
+            name = "DefaultPreviewLight"
+        )
+        @Composable
+        fun ReplyAppPreview() {
+            AppTheme {
+                ReplyApp(
+                    replyHomeUIState = ReplyHomeUIState(
+                        emails = LocalEmailsDataProvider.allEmails
+                    )
+                )
+            }
+        }}
