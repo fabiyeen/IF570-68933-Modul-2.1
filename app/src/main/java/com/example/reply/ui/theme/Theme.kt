@@ -98,9 +98,11 @@ fun AppTheme(
 ) {
     // dynamic theming content
 
+    val colors
     MaterialTheme(
         colorScheme = colors,
         typography = typography,
+        shapes = shapes,
         content = content
     )
 }
