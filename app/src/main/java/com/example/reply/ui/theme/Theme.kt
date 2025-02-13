@@ -88,16 +88,18 @@ private val LightColors = lightColorScheme(
 )
 
 @Composable
-fun ReplyTheme(
-    darkTheme: Boolean = false,
-    content: @Composable () -> Unit
+fun AppTheme(
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable() () -> Unit
 ) {
-    val replyColorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colors = if (!useDarkTheme) {
+        LightColors
+    } else {
+        DarkColors
     }
+
     MaterialTheme(
-        colorScheme = replyColorScheme,
+        colorScheme = colors,
         content = content
     )
 }
